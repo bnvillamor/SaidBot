@@ -3,15 +3,6 @@ import responses
 import random
 
 
-async def send_message(message, user_message, is_private):
-    try:
-        response = responses.handle_response(user_message)
-        await message.author.send(response) if is_private else await message.channel.send(response)
-    
-    except Exception as e:
-        print(e)
-
-
 def run_bot():
     TOKEN = 'MTA2Mjg4NzE4NjIwNDIwNTA5Ng.GIJbJs.uWit6mkIbwIMCavyjw6iWURZVMgbx0NHaDy3sQ'
     intents = discord.Intents.default()
@@ -34,19 +25,13 @@ def run_bot():
 
         print(f"{username} said: '{user_message}' ({channel})")
 
-        if user_message[0] == '?':
-            user_message = user_message[1:]
-            await send_message(message, user_message, is_private=True)
-        else:
-            await send_message(message, user_message, is_private=False)
-
-
         if message.content.startswith('!random') and message.author != client.user:
             random_messages = []
             async for msg in message.channel.history(limit=300):
                 if msg.author != client.user:
                     random_messages.append(msg)
             if len(random_messages) > 0:
+                global random_message
                 random_message = random.choice(random_messages)
                 if len(random_message.attachments) > 0:
                     attachment = random_message.attachments[0]
@@ -56,17 +41,12 @@ def run_bot():
                         await message.channel.send(file=discord.File(attachment.url))
                 else:
                     await message.channel.send(random_message.content)
+        if message.content.startswith('!guess'):
+            guess = str(message.content)
+            answer = str(random_message.author)
+            if guess[7:] == answer[:-5]:
+                await message.channel.send('Correct!')
             else:
-                await message.channel.send("No messages found")
+                await message.channel.send(f'Unlucky, go next. The answer is {answer[:-5]}')
 
-        '''
-        @client.event
-        async def on_message(message):
-            if message.author == client.user:
-                return
-
-            if message.content.startswith('!answer'):
-                await message.channel.send(random_message.author)
-        '''
-        
-    client.run(TOKEN)
+    client.run(TOKEN) 
