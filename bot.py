@@ -1,10 +1,9 @@
 import discord
-import responses
 import random
 
 
 def run_bot():
-    TOKEN = 'MTA2Mjg4NzE4NjIwNDIwNTA5Ng.GIJbJs.uWit6mkIbwIMCavyjw6iWURZVMgbx0NHaDy3sQ'
+    TOKEN = 'MY_TOKEN'
     intents = discord.Intents.default()
     intents.message_content = True
     client = discord.Client(intents=intents)
